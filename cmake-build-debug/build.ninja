@@ -113,6 +113,14 @@ build CMakeFiles/DungeonCrawler.dir/src/equipment.cpp.obj: CXX_COMPILER__Dungeon
   OBJECT_DIR = CMakeFiles\DungeonCrawler.dir
   OBJECT_FILE_DIR = CMakeFiles\DungeonCrawler.dir\src
 
+build CMakeFiles/DungeonCrawler.dir/src/monsters.cpp.obj: CXX_COMPILER__DungeonCrawler_unscanned_Debug C$:/Users/Frozztie/Documents/00-CLion/DungeonCrawler/src/monsters.cpp || cmake_object_order_depends_target_DungeonCrawler
+  DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
+  DEP_FILE = CMakeFiles\DungeonCrawler.dir\src\monsters.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -IC:/Users/Frozztie/Documents/00-CLion/DungeonCrawler/include -IC:/Users/Frozztie/Documents/00-CLion/DungeonCrawler/cmake-build-debug/_deps/raylib-src/src -IC:/Users/Frozztie/Documents/00-CLion/DungeonCrawler/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
+  OBJECT_DIR = CMakeFiles\DungeonCrawler.dir
+  OBJECT_FILE_DIR = CMakeFiles\DungeonCrawler.dir\src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target DungeonCrawler
@@ -121,7 +129,7 @@ build CMakeFiles/DungeonCrawler.dir/src/equipment.cpp.obj: CXX_COMPILER__Dungeon
 #############################################
 # Link the executable DungeonCrawler.exe
 
-build DungeonCrawler.exe: CXX_EXECUTABLE_LINKER__DungeonCrawler_Debug CMakeFiles/DungeonCrawler.dir/src/main.cpp.obj CMakeFiles/DungeonCrawler.dir/src/dungeon.cpp.obj CMakeFiles/DungeonCrawler.dir/src/player.cpp.obj CMakeFiles/DungeonCrawler.dir/src/game.cpp.obj CMakeFiles/DungeonCrawler.dir/src/ui.cpp.obj CMakeFiles/DungeonCrawler.dir/src/button.cpp.obj CMakeFiles/DungeonCrawler.dir/src/skills.cpp.obj CMakeFiles/DungeonCrawler.dir/src/equipment.cpp.obj | _deps/raylib-build/raylib/libraylib.a || _deps/raylib-build/raylib/external/glfw/src/glfw _deps/raylib-build/raylib/libraylib.a
+build DungeonCrawler.exe: CXX_EXECUTABLE_LINKER__DungeonCrawler_Debug CMakeFiles/DungeonCrawler.dir/src/main.cpp.obj CMakeFiles/DungeonCrawler.dir/src/dungeon.cpp.obj CMakeFiles/DungeonCrawler.dir/src/player.cpp.obj CMakeFiles/DungeonCrawler.dir/src/game.cpp.obj CMakeFiles/DungeonCrawler.dir/src/ui.cpp.obj CMakeFiles/DungeonCrawler.dir/src/button.cpp.obj CMakeFiles/DungeonCrawler.dir/src/skills.cpp.obj CMakeFiles/DungeonCrawler.dir/src/equipment.cpp.obj CMakeFiles/DungeonCrawler.dir/src/monsters.cpp.obj | _deps/raylib-build/raylib/libraylib.a || _deps/raylib-build/raylib/external/glfw/src/glfw _deps/raylib-build/raylib/libraylib.a
   FLAGS = -g
   LINK_LIBRARIES = _deps/raylib-build/raylib/libraylib.a  -lwinmm  -lopengl32  -lglu32  -lwinmm  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\DungeonCrawler.dir

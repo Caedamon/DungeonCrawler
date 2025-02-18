@@ -11,6 +11,6 @@
 -- Compiling with the flags:
 --   PLATFORM=PLATFORM_DESKTOP
 --   GRAPHICS=GRAPHICS_API_OPENGL_33
--- Configuring done (0.9s)
+-- Configuring done (1.5s)
 -- Generating done (0.1s)
 -- Build files have been written to: C:/Users/Frozztie/Documents/00-CLion/DungeonCrawler/cmake-build-debug
