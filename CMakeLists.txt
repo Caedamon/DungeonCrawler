@@ -42,6 +42,14 @@ add_executable(DungeonCrawler
         include/dungeon.h
         include/player.h
         include/game.h
+        src/ui.cpp
+        include/ui.h
+        src/button.cpp
+        include/button.h
+        src/skills.cpp
+        include/skills.h
+        src/equipment.cpp
+        include/equipment.h
 )
 
 # Include Raylib headers
