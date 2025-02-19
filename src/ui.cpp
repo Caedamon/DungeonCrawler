@@ -30,6 +30,6 @@ void DrawHeroSelectionScreen(int &currentScreen) {
     DrawText("- Pick Lock", 320, 360, 18, LIGHTGRAY);
 
     if (DrawButton(300, 420, 200, 50, "Start Adventure")) {
-        currentScreen = 4;  // Move to the game screen (not implemented yet)
+        currentScreen = GAME;  // Move to the game screen (i hope...)
     }
 }

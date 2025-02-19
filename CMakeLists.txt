@@ -52,6 +52,7 @@ add_executable(DungeonCrawler
         include/equipment.h
         src/monsters.cpp
         include/monsters.h
+        include/game_state.h
 )
 
 # Include Raylib headers
