@@ -133,7 +133,7 @@ build DungeonCrawler.exe: CXX_EXECUTABLE_LINKER__DungeonCrawler_Debug CMakeFiles
   FLAGS = -g
   LINK_LIBRARIES = _deps/raylib-build/raylib/libraylib.a  -lwinmm  -lopengl32  -lglu32  -lwinmm  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\DungeonCrawler.dir
-  POST_BUILD = cd .
+  POST_BUILD = C:\Windows\system32\cmd.exe /C "cd /D C:\Users\Frozztie\Documents\00-CLion\DungeonCrawler\cmake-build-debug && "C:\Program Files\JetBrains\CLion 2024.3.1.1\bin\cmake\win\x64\bin\cmake.exe" -E copy_directory C:/Users/Frozztie/Documents/00-CLion/DungeonCrawler/resources C:/Users/Frozztie/Documents/00-CLion/DungeonCrawler/cmake-build-debug/resources"
   PRE_LINK = cd .
   TARGET_FILE = DungeonCrawler.exe
   TARGET_IMPLIB = libDungeonCrawler.dll.a
