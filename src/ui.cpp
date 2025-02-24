@@ -1,25 +1,28 @@
 #include "ui.h"
 #include "button.h"
+#include "dungeon.h"
+#include "game.h"
 #include "raylib.h"
 #include <iostream>
 
-void DrawStartScreen(int &currentScreen) {
+void DrawStartScreen(Game &game) {
     DrawText("Welcome Adventurer! To the Dungeon Adventure!", 120, 100, 24, WHITE);
 
     if (DrawButton(250, 250, 300, 50, "Start New Adventure")) {
-        currentScreen = HERO_SELECTION;// Move to Hero Selection
+        game.currentState = HERO_SELECTION; // Move to Hero Selection
     }
 
     if (DrawButton(250, 320, 300, 50, "Load Adventure")) {
-        currentScreen = LOAD;   // Load Game
+        game.currentState = LOAD;   // Load Game
     }
 
     if (DrawButton(250, 390, 300, 50, "Run Away From The Dungeons!")) {
-        currentScreen = EXIT;  // Quit Game
+        CloseWindow();  // Properly closes Raylib
+        exit(0);
     }
 }
 
-void DrawHeroSelectionScreen(int &currentScreen) {
+void DrawHeroSelectionScreen(Game &game) {
     DrawText("Pick Your Hero", 300, 100, 30, WHITE);
     DrawText("Adventurer", 350, 160, 24, YELLOW);
 
@@ -33,12 +36,13 @@ void DrawHeroSelectionScreen(int &currentScreen) {
 
     if (DrawButton(300, 420, 200, 50, "Start Adventure")) {
         std::cout << "Start Adventure clicked! Switching to GAME..." << std::endl;
-        currentScreen = GAME;  // Move to the game screen (i hope...)
+        game.currentState = GAME;  // Move to the game screen (i hope...)
     }
 }
 
 bool DrawButton(int x, int y, int width, int height, const char *text) {
-    Rectangle buttonBounds = { (float)x, (float)y, (float)width, (float)height };
+    Rectangle buttonBounds = { static_cast<float>(x), static_cast<float>(y),
+                           static_cast<float>(width), static_cast<float>(height) };
     bool isHovered = CheckCollisionPointRec(GetMousePosition(), buttonBounds);
 
     Color buttonColor = isHovered ? DARKGRAY : LIGHTGRAY;

@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "raylib.h"
+#include "monsters.h"
 
 extern const int MAP_WIDTH;
 extern const int MAP_HEIGHT;

@@ -13,11 +13,25 @@ Dungeon::Dungeon() {
     GenerateDungeon();
 
     // Load font with explicit Unicode glyphs
-    int codepoints[] = { 0x2B06, 0x2B07 }; // Unicode for ⬆ (Up) and ⬇ (Down)
-    gameFont = LoadFontEx("resources/NotoSans-Regular.ttf", 32, codepoints, 2);
+    // Add all Unicode symbols used in the game
+    int codepoints[] = {
+        0x2B06, 0x2B07, // Stairs Up (⬆) and Stairs Down (⬇)
+        0x1F6D1,        // Trap (🛑)
+        0x1F4B0,        // Gold (💰)
+        0x1F511,        // Key (🔑)
+        0x1F3C6,        // Trophy (🏆)
+        0x1F480,        // Skeleton (💀)
+        0x1F47E,        // Goblin (👾)
+        0x1F577,        // Spider (🕷)
+        0x1F987,        // Bat (🦇)
+        0x1F40D         // Snake (🐍)
+    };
+
+    gameFont = LoadFontEx("resources/NotoSans-Regular.ttf", 32, codepoints, sizeof(codepoints) / sizeof(codepoints[0]));
 
     if (gameFont.texture.id == 0) {
-        std::cerr << "Error: Failed to load font 'NotoSans-Regular.ttf'!" << std::endl;
+        std::cerr << "CRITICAL ERROR: Font 'NotoSans-Regular.ttf' FAILED TO LOAD. GAME CANNOT CONTINUE." << std::endl;
+        exit(EXIT_FAILURE);  // ⬅ Stop execution immediately.
     } else {
         std::cout << "Font loaded successfully with Unicode glyphs!" << std::endl;
     }

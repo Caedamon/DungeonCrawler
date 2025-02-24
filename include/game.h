@@ -4,20 +4,21 @@
 #include "raylib.h"
 #include "dungeon.h"
 #include "game_state.h"
+#include "player.h"
+#include "monsters.h"
 
 class Game {
 public:
-    Game();  // Constructor
-    void Run();  // Main game loop
-
-private:
     GameState currentState;
-    Dungeon currentDungeon;
+    Player player;
+    Dungeon dungeon;
+    std::vector<Monster> monsters;
 
+    Game();  // Constructor
     void HandleInput();
     void Update();
     void Draw();
-    void StartNewDungeon();
+    void Run();
 };
 
 #endif

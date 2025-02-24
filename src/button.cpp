@@ -1,13 +1,14 @@
 #include "button.h"
 
 bool DrawButton(int x, int y, int width, int height, const std::string &text) {
-    Rectangle rect = { (float)x, (float)y, (float)width, (float)height };
+    Rectangle rect = { static_cast<float>(x), static_cast<float>(y),
+                   static_cast<float>(width), static_cast<float>(height) };
     Vector2 mouse = GetMousePosition();
     bool clicked = false;
 
     if (CheckCollisionPointRec(mouse, rect)) {
         DrawRectangleRec(rect, GRAY);
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
             clicked = true;
         }
     } else {
@@ -15,7 +16,8 @@ bool DrawButton(int x, int y, int width, int height, const std::string &text) {
     }
 
     DrawRectangleLines(x, y, width, height, BLACK);
-    DrawText(text.c_str(), x + 20, y + 15, 20, BLACK);
+    int textWidth = MeasureText(text.c_str(), 20);
+    DrawText(text.c_str(), x + (width - textWidth) / 2, y + (height - 20) / 2, 20, BLACK);
 
     return clicked;
 }
