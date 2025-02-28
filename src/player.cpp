@@ -3,7 +3,8 @@
 #include "monsters.h"
 
 #include <iostream>
-#include <ostream>
+#include <algorithm>
+#include <unordered_set>
 
 Player::Player(int startX, int startY) {
     x = startX;
@@ -14,12 +15,8 @@ Player::Player(int startX, int startY) {
 }
 
 bool Player::CanMove(int newX, int newY, const std::vector<Monster>& monsters) {
-    for (const Monster& m : monsters) {
-        if (m.x == newX && m.y == newY) {
-            return false;
-        }
-    }
-    return true;
+    return std::none_of(monsters.begin(), monsters.end(),
+    [newX, newY](const Monster& m) { return m.GetX() == newX && m.GetY() == newY; });
 }
 
 void Player::Move(int dx, int dy, Dungeon &dungeon, const std::vector<Monster>& monsters) {
@@ -28,7 +25,8 @@ void Player::Move(int dx, int dy, Dungeon &dungeon, const std::vector<Monster>& 
 
     // Check if movement is within dungeon boundaries
     if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
-        if (dungeon.grid[newY][newX] != "#" && CanMove(newX, newY, monsters)) {
+        static const std::unordered_set<std::string> blockedTiles = {"#", "⬆", "⬇"};
+        if (blockedTiles.find(dungeon.grid[newY][newX]) == blockedTiles.end() && CanMove(newX, newY, monsters)) {
             this->x = newX;
             this->y = newY;
         }
@@ -36,7 +34,6 @@ void Player::Move(int dx, int dy, Dungeon &dungeon, const std::vector<Monster>& 
 }
 
 void Player::RegenHealth() {
-    health += 1; //regen 1hp /turn
-    if (health > maxHealth) health = maxHealth;
+    health = std::min(health + 1, maxHealth);  // Regenerates 1 HP per turn
     std::cout << "Health: " << health << std::endl;
 }

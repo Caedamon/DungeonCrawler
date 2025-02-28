@@ -1,9 +1,15 @@
-#include "dungeon.h"
-#include "raylib.h"
+this is my dungeon cpp
+
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <random>
+#include <fstream>
+#include <filesystem>
+
+#include "game.h"
+#include "dungeon.h"
+#include "raylib.h"
 
 const int MAP_WIDTH = 50;
 const int MAP_HEIGHT = 35;
@@ -26,15 +32,7 @@ Dungeon::Dungeon() {
         0x1F987,        // Bat (🦇)
         0x1F40D         // Snake (🐍)
     };
-
-    gameFont = LoadFontEx("resources/NotoSans-Regular.ttf", 32, codepoints, sizeof(codepoints) / sizeof(codepoints[0]));
-
-    if (gameFont.texture.id == 0) {
-        std::cerr << "CRITICAL ERROR: Font 'NotoSans-Regular.ttf' FAILED TO LOAD. GAME CANNOT CONTINUE." << std::endl;
-        exit(EXIT_FAILURE);  // ⬅ Stop execution immediately.
-    } else {
-        std::cout << "Font loaded successfully with Unicode glyphs!" << std::endl;
-    }
+    int glyphCount = sizeof(codepoints) / sizeof(codepoints[0]);
 
     if (IsWindowReady()) {
         RenderToTexture();
@@ -42,7 +40,7 @@ Dungeon::Dungeon() {
 }
 
 Dungeon::~Dungeon() {
-    UnloadFont(gameFont);
+
 }
 
 void Dungeon::GenerateDungeon() {
@@ -90,7 +88,20 @@ void Dungeon::GenerateDungeon() {
 
     GenerateCorridors();
     PlaceStairs();
+
+    // Print the dungeon grid to the console
+    std::cout << "Generated Dungeon Layout:\n";
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            std::cout << grid[y][x];
+        }
+        std::cout << std::endl;
+    }
+
+    // After generating a new dungeon, force a re-render
+    RenderToTexture();
 }
+
 
 void Dungeon::GenerateCorridors() {
     for (size_t i = 1; i < rooms.size(); i++) {
@@ -129,11 +140,12 @@ void Dungeon::RenderToTexture() {
         return;
     }
 
-    if (dungeonTexture.id != 0) {
-        UnloadRenderTexture(dungeonTexture);
-    }
+    TraceLog(LOG_INFO, "Rendering Dungeon Using ASCII Symbols.");
 
-    dungeonTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    // Ensure Texture is Created Once
+    if (dungeonTexture.id == 0) {
+        dungeonTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    }
 
     BeginTextureMode(dungeonTexture);
     ClearBackground(DARKGRAY);
@@ -147,38 +159,34 @@ void Dungeon::RenderToTexture() {
             Color color;
             std::string symbol = "";
 
-            if (grid[y][x] == "⬆") {
-                color = LIGHTGRAY;
-                symbol = "⬆";
-            }
-            else if (grid[y][x] == "⬇") {
-                color = LIGHTGRAY;
-                symbol = "⬇";
-            }
-            else if (grid[y][x] == "#") color = DARKGRAY;
-            else if (grid[y][x] == ".") color = LIGHTGRAY;
-            else color = BLACK;
+            if (grid[y][x] == "⬆") symbol = "^";  // Up stairs
+            if (grid[y][x] == "⬇") symbol = "v";  // Down stairs
+            if (grid[y][x] == "#") symbol = "#";  // Walls
+            if (grid[y][x] == ".") symbol = " ";  // Invisible walkable floors
+            if (grid[y][x] == "¤") symbol = "¤";  // Player
+            if (grid[y][x] == "$") symbol = "$";  // Monsters
 
             DrawRectangle(x * tileSizeFinal, y * tileSizeFinal, tileSizeFinal, tileSizeFinal, color);
 
-            if (!symbol.empty()) {
-                std::cout << "Rendering tile at (" << x << ", " << y << ") : " << symbol << std::endl;
+            if (symbol.empty()) continue;
 
-                Vector2 textPos = {
-                    static_cast<float>(x * tileSizeFinal + tileSizeFinal / 4),
-                    static_cast<float>(y * tileSizeFinal + tileSizeFinal / 4)
-                };
-                DrawTextEx(gameFont, symbol.c_str(), textPos, tileSizeFinal / 2, 1, BLACK);
-            }
+            Vector2 textPos = {
+                static_cast<float>(x * tileSizeFinal + tileSizeFinal / 4),
+                static_cast<float>(y * tileSizeFinal + tileSizeFinal / 4)
+            };
+
+            DrawText(symbol.c_str(), textPos.x, textPos.y, tileSizeFinal / 2, BLACK);
         }
     }
 
     EndTextureMode();
 }
 
+
+
 void Dungeon::Draw() {
+    // Render to texture **only once**, unless a new dungeon is generated
     if (dungeonTexture.id == 0) {
-        std::cerr << "Warning: Dungeon texture missing, regenerating..." << std::endl;
         RenderToTexture();
     }
 

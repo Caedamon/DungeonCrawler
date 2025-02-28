@@ -2,12 +2,10 @@
 #define UI_H
 
 #include "raylib.h"
-#include "game.h"
-#include "game_state.h"
 
+// Button drawing function
 bool DrawButton(int x, int y, int width, int height, const char *text);
 
+// Screen rendering functions
 void DrawStartScreen(int &currentScreen);
 void DrawHeroSelectionScreen(int &currentScreen);
-
-#endif

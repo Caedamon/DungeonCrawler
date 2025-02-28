@@ -1,13 +1,15 @@
 #include "game.h"
 #include <iostream>
+#include <filesystem>
+#include <fstream>
 
 Game::Game() : player(0, 0) {  // Initialize player
     dungeon.GenerateDungeon();
 
-    // Place player at the stairs (⬆)
+    // Place player at the stairs (^)
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
-            if (dungeon.grid[y][x] == "⬆") {
+            if (dungeon.grid[y][x] == "^") {
                 player.x = x;
                 player.y = y;
                 return;
@@ -41,15 +43,19 @@ void Game::Update() {
 void Game::Draw() {
     dungeon.Draw();
 
-    // Draw player
-    DrawRectangle(player.x * 20, player.y * 20, 20, 20, BLUE);
+    // Draw player using ASCII symbol "¤"
+    DrawText("¤", player.x * 20, player.y * 20, 20, BLUE);
 }
 
 void Game::Run() {
+    // Initialize Raylib Window
     InitWindow(800, 600, "Dungeon Crawler");
-    InitAudioDevice(); //For sound support
+    InitAudioDevice(); // For sound support
     SetTargetFPS(60);
 
+    std::cout << "Current Working Directory: " << std::filesystem::current_path() << std::endl;
+
+    // Main Game Loop
     while (!WindowShouldClose()) {
         Update();
         BeginDrawing();
@@ -58,6 +64,7 @@ void Game::Run() {
         EndDrawing();
     }
 
-    CloseAudioDevice(); //for soundsuport
+    // Properly Close Everything
+    CloseAudioDevice();
     CloseWindow();
 }

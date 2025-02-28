@@ -3,17 +3,31 @@
 
 #include <string>
 #include <vector>
+#include "raylib.h"  // Needed for drawing
 
-struct Monster {
+class Monster {
+public:
+    Monster(const std::string& name, const std::string& icon, int x, int y, int health, int attack, float speed);
+
+    // Getters
+    const std::string& GetName() const { return name; }
+    const std::string& GetIcon() const { return icon; }
+    int GetX() const { return x; }
+    int GetY() const { return y; }
+    int GetHealth() const { return health; }
+    int GetAttack() const { return attack; }
+    float GetSpeed() const { return speed; }
+
+    // Draw the Monster
+    void Draw();
+
+private:
     std::string name;
-    std::string icon;  // Use string to store Unicode symbols
-    int x, y; 
+    std::string icon;
+    int x, y;
     int health;
     int attack;
     float speed;
-
-    Monster(std::string name, std::string icon, int x, int y, int health, int attack, float speed)
-        : name(name), icon(icon), x(x), y(y), health(health), attack(attack), speed(speed) {}
 };
 
 // Returns a list of all default monsters

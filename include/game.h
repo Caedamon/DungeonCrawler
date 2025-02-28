@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <vector>
 #include "raylib.h"
 #include "dungeon.h"
 #include "game_state.h"
@@ -14,11 +15,9 @@ public:
     Dungeon dungeon;
     std::vector<Monster> monsters;
 
-    Game();  // Constructor
+    Game();
     void HandleInput();
     void Update();
     void Draw();
     void Run();
 };
-
-#endif

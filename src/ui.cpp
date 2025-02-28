@@ -9,16 +9,15 @@ void DrawStartScreen(Game &game) {
     DrawText("Welcome Adventurer! To the Dungeon Adventure!", 120, 100, 24, WHITE);
 
     if (DrawButton(250, 250, 300, 50, "Start New Adventure")) {
-        game.currentState = HERO_SELECTION; // Move to Hero Selection
+        game.currentState = GameState::HERO_SELECTION;
     }
 
     if (DrawButton(250, 320, 300, 50, "Load Adventure")) {
-        game.currentState = LOAD;   // Load Game
+        game.currentState = GameState::LOAD;
     }
 
     if (DrawButton(250, 390, 300, 50, "Run Away From The Dungeons!")) {
-        CloseWindow();  // Properly closes Raylib
-        exit(0);
+        CloseWindow();
     }
 }
 
@@ -35,21 +34,7 @@ void DrawHeroSelectionScreen(Game &game) {
     DrawText("- Pick Lock", 320, 360, 18, LIGHTGRAY);
 
     if (DrawButton(300, 420, 200, 50, "Start Adventure")) {
-        std::cout << "Start Adventure clicked! Switching to GAME..." << std::endl;
-        game.currentState = GAME;  // Move to the game screen (i hope...)
+        std::cout << "🎮 Player has selected their hero! Starting the adventure..." << std::endl;
+        game.currentState = GameState::GAME;
     }
-}
-
-bool DrawButton(int x, int y, int width, int height, const char *text) {
-    Rectangle buttonBounds = { static_cast<float>(x), static_cast<float>(y),
-                           static_cast<float>(width), static_cast<float>(height) };
-    bool isHovered = CheckCollisionPointRec(GetMousePosition(), buttonBounds);
-
-    Color buttonColor = isHovered ? DARKGRAY : LIGHTGRAY;
-    DrawRectangleRec(buttonBounds, buttonColor);
-
-    int textWidth = MeasureText(text, 20);
-    DrawText(text, x + (width - textWidth) / 2, y + (height - 20) / 2, 20, BLACK);
-
-    return isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
