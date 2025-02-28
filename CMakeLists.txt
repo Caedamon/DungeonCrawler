@@ -66,9 +66,3 @@ elseif (APPLE)
 else()
     target_link_libraries(DungeonCrawler PRIVATE ${RAYLIB_LIB} m GL pthread dl X11)
 endif()
-
-# Ensure the resources folder is copied to the build directory
-add_custom_command(TARGET DungeonCrawler POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/resources" "${CMAKE_BINARY_DIR}/resources"
-)
