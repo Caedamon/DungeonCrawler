@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "raylib.h"  // Keep this since we use RenderTexture2D
+#include "raylib.h"
 
 extern const int MAP_WIDTH;
 extern const int MAP_HEIGHT;
@@ -12,17 +12,19 @@ struct Room {
     int x, y, width, height;
 };
 
-struct Dungeon {
+class Dungeon {
+public:
     std::vector<std::vector<std::string>> grid;
     std::vector<Room> rooms;
     RenderTexture2D dungeonTexture = {0}; // Stores pre-rendered dungeon map
 
     Dungeon();
     ~Dungeon();
+
     void GenerateDungeon();
     void PlaceStairs();
     void GenerateCorridors();
-    void Draw();
+    void Draw(int playerX, int playerY); // Accepts player position for rendering
     void RenderToTexture();
 };
 
