@@ -1,5 +1,3 @@
-this is my dungeon cpp
-
 #include <cstdlib>
 #include <ctime>
 #include <iostream>

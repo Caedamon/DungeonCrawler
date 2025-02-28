@@ -9,3 +9,5 @@ bool DrawButton(int x, int y, int width, int height, const char *text);
 // Screen rendering functions
 void DrawStartScreen(int &currentScreen);
 void DrawHeroSelectionScreen(int &currentScreen);
+
+#endif
