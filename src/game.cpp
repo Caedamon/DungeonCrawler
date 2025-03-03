@@ -3,9 +3,10 @@
 #include <filesystem>
 #include <fstream>
 
-Game::Game() : player(0, 0) {
-    std::cout << "[DEBUG] Game::Game() started." << std::endl;
+#include "ui.h"
 
+Game::Game() : player(0, 0), dungeonTexture({0}) {
+    std::cout << "[DEBUG] Game::Game() started." << std::endl;
     dungeon.GenerateDungeon();
     std::cout << "[DEBUG] dungeon.GenerateDungeon() finished." << std::endl;
 
@@ -16,7 +17,7 @@ Game::Game() : player(0, 0) {
     std::cout << "[DEBUG] Dungeon Grid before placing player:\n";
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
-            std::cout << dungeon.grid[y][x];  // Print each tile
+            std::cout << dungeon.grid[y][x];
         }
         std::cout << std::endl;
     }
@@ -24,7 +25,7 @@ Game::Game() : player(0, 0) {
     // Search for stairs
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
-            if (dungeon.grid[y][x] == "^") {  // Look for stairs
+            if (dungeon.grid[y][x] == "^") {
                 player.x = x;
                 player.y = y;
                 playerPlaced = true;
@@ -96,6 +97,29 @@ void Game::Draw() {
     dungeon.Draw(player.x, player.y);
 }
 
+void Game::RenderToTexture() {
+    std::cout << "[DEBUG] Entering RenderToTexture()" << std::endl;
+
+    // Ensure the window is initialized before rendering
+    if (!IsWindowReady()) {
+        std::cerr << "[ERROR] RenderToTexture() called before Raylib window initialized!" << std::endl;
+        return;
+    }
+
+    // Ensure dungeonTexture is valid
+    if (dungeonTexture.id == 0) {
+        std::cout << "[DEBUG] Initializing dungeonTexture..." << std::endl;
+        dungeonTexture = LoadRenderTexture(800, 600);
+    }
+
+    BeginTextureMode(dungeonTexture);
+    ClearBackground(BLACK);
+    dungeon.Draw(player.x, player.y);
+    EndTextureMode();
+
+    std::cout << "[DEBUG] Exiting RenderToTexture()" << std::endl;
+}
+
 void Game::Run() {
     std::cout << "[DEBUG] Initializing Window..." << std::endl;
     InitWindow(800, 600, "Dungeon Crawler");
@@ -103,21 +127,40 @@ void Game::Run() {
     SetTargetFPS(60);
     std::cout << "[DEBUG] Window initialized!" << std::endl;
 
-    std::cout << "[DEBUG] Calling RenderToTexture() from Game::Run()" << std::endl;
-    dungeon.RenderToTexture();
-    std::cout << "[DEBUG] RenderToTexture() finished." << std::endl;
+    // Generate the dungeon AFTER window is initialized
+    std::cout << "[DEBUG] Generating Dungeon after initializing window..." << std::endl;
+    dungeon.GenerateDungeon();
+    std::cout << "[DEBUG] Dungeon generated successfully!" << std::endl;
 
-    int frameCounter = 0;
+    // Call RenderToTexture AFTER initializing the window
+    std::cout << "[DEBUG] Calling RenderToTexture()..." << std::endl;
+    RenderToTexture();
+    std::cout << "[DEBUG] RenderToTexture() completed!" << std::endl;
+
+    currentState = GameState::MENU;
+
     while (!WindowShouldClose()) {
-        if (frameCounter % 60 == 0) {
-            std::cout << "[DEBUG] Game running... (Frame: " << frameCounter << ")" << std::endl;
-        }
-        frameCounter++;
-
-        Update();
         BeginDrawing();
         ClearBackground(BLACK);
-        Draw();
+
+        switch (currentState) {
+            case GameState::MENU:
+                DrawStartScreen(*this);
+            break;
+            case GameState::HERO_SELECTION:
+                DrawHeroSelectionScreen(*this);
+            break;
+            case GameState::GAME:
+                Update();
+            Draw();
+            break;
+            case GameState::EXIT:
+                CloseWindow();
+            return;
+            default:
+                break;
+        }
+
         EndDrawing();
     }
 

@@ -81,6 +81,8 @@ void Dungeon::GenerateDungeon() {
     GenerateCorridors();
     PlaceStairs();
     std::cout << "[DEBUG] GenerateDungeon() completed successfully!" << std::endl;
+
+    RenderToTexture();
 }
 
 void Dungeon::GenerateCorridors() {
@@ -141,25 +143,32 @@ void Dungeon::RenderToTexture() {
 
     BeginTextureMode(dungeonTexture);
     ClearBackground(DARKGRAY);
-    EndTextureMode();
 
+    // Draw the dungeon grid to the texture
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            if (grid[y][x] == "#") {
+                DrawRectangle(x * 20, y * 20, 20, 20, DARKGRAY);
+            } else if (grid[y][x] == ".") {
+                DrawRectangle(x * 20, y * 20, 20, 20, LIGHTGRAY);
+            } else if (grid[y][x] == "^") {
+                DrawRectangle(x * 20, y * 20, 20, 20, GREEN);
+            } else if (grid[y][x] == "v") {
+                DrawRectangle(x * 20, y * 20, 20, 20, RED);
+            }
+        }
+    }
+
+    EndTextureMode();
     std::cout << "[DEBUG] Exiting RenderToTexture()" << std::endl;
 }
 
 void Dungeon::Draw(int playerX, int playerY) {
     static int lastX = -1, lastY = -1;
 
-    // Avoid redundant drawing messages
-    if (playerX != lastX || playerY != lastY) {
-        std::cout << "[DEBUG] Drawing dungeon..." << std::endl;
-        std::cout << "[DEBUG] Drawing player at (" << playerX << ", " << playerY << ")" << std::endl;
-        lastX = playerX;
-        lastY = playerY;
-    }
-
     if (dungeonTexture.id == 0) {
-        std::cerr << "[ERROR] Dungeon texture is not initialized!" << std::endl;
-        return;
+        std::cerr << "[ERROR] Dungeon texture is not initialized! Regenerating..." << std::endl;
+        RenderToTexture();
     }
 
     DrawTextureRec(dungeonTexture.texture,

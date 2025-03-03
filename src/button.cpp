@@ -1,6 +1,6 @@
 #include "button.h"
 
-bool DrawButton(int x, int y, int width, int height, const char* text) {
+bool DrawButton(int x, int y, int width, int height, const char *text) {
     // Define button rectangle
     Rectangle rect = { static_cast<float>(x), static_cast<float>(y),
                        static_cast<float>(width), static_cast<float>(height) };
@@ -22,7 +22,7 @@ bool DrawButton(int x, int y, int width, int height, const char* text) {
 
     // Draw centered button text
     int textWidth = MeasureText(text, 20);
-    DrawText(text, x + (width - textWidth) / 2, y + (height - 20) / 2, 20, BLACK);
+    DrawText(text, x + (width - textWidth) / 2, y + (height - 20) / 2, 20, BLACK);  // Use `text` directly
 
     return clicked;
 }

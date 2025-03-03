@@ -20,6 +20,9 @@ public:
     void Update();
     void Draw();
     void Run();
+    void RenderToTexture();
+private:
+    RenderTexture2D dungeonTexture;
 };
 
 #endif
