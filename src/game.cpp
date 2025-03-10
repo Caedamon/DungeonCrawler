@@ -2,48 +2,25 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-
 #include "ui.h"
+#include "dungeon.h"
+#include "algorithm"
 
 Game::Game() : player(0, 0), dungeonTexture({0}) {
     std::cout << "[DEBUG] Game::Game() started." << std::endl;
+    dungeon.LoadTextures();
+}
+
+void Game::Init() {
+    std::cout << "[DEBUG] Initializing game..." << std::endl;
+
+    // Generate the dungeon first
     dungeon.GenerateDungeon();
-    std::cout << "[DEBUG] dungeon.GenerateDungeon() finished." << std::endl;
 
-    // Find the stairs in the dungeon and place the player there
-    bool playerPlaced = false;
+    // Now render the dungeon with the player's vision range
+    dungeon.RenderToTexture(player);
 
-    // Debugging: Print the dungeon grid before searching for stairs
-    std::cout << "[DEBUG] Dungeon Grid before placing player:\n";
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
-            std::cout << dungeon.grid[y][x];
-        }
-        std::cout << std::endl;
-    }
-
-    // Search for stairs
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
-            if (dungeon.grid[y][x] == "^") {
-                player.x = x;
-                player.y = y;
-                playerPlaced = true;
-                std::cout << "[DEBUG] Player placed at (" << player.x << ", " << player.y << ")" << std::endl;
-                break;
-            }
-        }
-        if (playerPlaced) break;
-    }
-
-    // If no stairs were found, log the error
-    if (!playerPlaced) {
-        std::cerr << "[ERROR] Player was not placed! Defaulting to (5,5)." << std::endl;
-        player.x = 5;
-        player.y = 5;
-    }
-
-    std::cout << "[DEBUG] Game::Game() finished." << std::endl;
+    std::cout << "[DEBUG] Dungeon generated successfully!" << std::endl;
 }
 
 void Game::HandleInput() {
@@ -67,34 +44,58 @@ void Game::HandleInput() {
 }
 
 void Game::Update() {
-    static int lastX = player.x, lastY = player.y;
+    int dx = 0, dy = 0;
 
-    // Update player position
-    if (IsKeyPressed(KEY_RIGHT)) player.x++;
-    if (IsKeyPressed(KEY_LEFT)) player.x--;
-    if (IsKeyPressed(KEY_DOWN)) player.y++;
-    if (IsKeyPressed(KEY_UP)) player.y--;
+    if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) dx = -1;
+    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) dx = 1;
+    if (IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) dy = -1;
+    if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) dy = 1;
 
-    // Only print debug messages when position changes
-    if (player.x != lastX || player.y != lastY) {
-        std::cout << "[DEBUG] Player moved to (" << player.x << ", " << player.y << ")" << std::endl;
-        lastX = player.x;
-        lastY = player.y;
+    if (dx != 0 || dy != 0) {
+    #if DEBUG_MODE
+        std::cout << "[DEBUG] Processing input: dx=" << dx << ", dy=" << dy << std::endl;
+    #endif
+        player.Move(dx, dy, dungeon, monsters);
     }
+
+    // Monsters attack the player even if they skipped movement
+    for (auto& monster : monsters) {
+        if (abs(monster.GetX() - player.x) + abs(monster.GetY() - player.y) == 1) {
+            monster.AttackPlayer(player);
+        }
+    }
+
+    // Remove dead monsters from the list
+    monsters.erase(
+        std::remove_if(monsters.begin(), monsters.end(),
+                       [](const Monster& m) { return m.IsDead(); }),
+        monsters.end());
 }
 
 void Game::Draw() {
     static int lastX = -1, lastY = -1;
+    static bool dungeonNeedsRedraw = true;
 
-    // Only print debug messages when necessary
+    // Only redraw the dungeon if the player moves
     if (player.x != lastX || player.y != lastY) {
-        std::cout << "[DEBUG] Drawing dungeon..." << std::endl;
-        std::cout << "[DEBUG] Drawing player at (" << player.x << ", " << player.y << ")" << std::endl;
+        #if DEBUG_MODE
+        std::cout << "[DEBUG] Player moved to (" << player.x << ", " << player.y << "). Redrawing dungeon." << std::endl;
+        #endif
+
+        dungeonNeedsRedraw = true;
         lastX = player.x;
         lastY = player.y;
     }
 
-    dungeon.Draw(player.x, player.y);
+    if (dungeonNeedsRedraw) {
+        dungeon.RenderToTexture(player);
+        dungeonNeedsRedraw = false;
+    }
+
+    // Draw the cached dungeon texture instead of redrawing everything
+    DrawTextureRec(dungeon.dungeonTexture.texture,
+                   {0, 0, (float)dungeon.dungeonTexture.texture.width, -(float)dungeon.dungeonTexture.texture.height},
+                   {0, 0}, WHITE);
 }
 
 void Game::RenderToTexture() {
@@ -127,15 +128,41 @@ void Game::Run() {
     SetTargetFPS(60);
     std::cout << "[DEBUG] Window initialized!" << std::endl;
 
-    // Generate the dungeon AFTER window is initialized
-    std::cout << "[DEBUG] Generating Dungeon after initializing window..." << std::endl;
+    // Generate the dungeon
     dungeon.GenerateDungeon();
     std::cout << "[DEBUG] Dungeon generated successfully!" << std::endl;
 
-    // Call RenderToTexture AFTER initializing the window
-    std::cout << "[DEBUG] Calling RenderToTexture()..." << std::endl;
-    RenderToTexture();
-    std::cout << "[DEBUG] RenderToTexture() completed!" << std::endl;
+    // Find the stairs and place the player
+    bool playerPlaced = false;
+
+    std::cout << "[DEBUG] Dungeon Grid before placing player:\n";
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            std::cout << dungeon.grid[y][x];
+        }
+        std::cout << std::endl;
+    }
+
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            if (dungeon.grid[y][x] == '^') {
+                player.x = x;
+                player.y = y;
+                playerPlaced = true;
+                std::cout << "[DEBUG] Player placed at (" << player.x << ", " << player.y << ")" << std::endl;
+                break;
+            }
+        }
+        if (playerPlaced) break;
+    }
+
+    if (!playerPlaced) {
+        std::cerr << "[ERROR] Player was not placed! Defaulting to (5,5)." << std::endl;
+        player.x = 5;
+        player.y = 5;
+    }
+
+    std::cout << "[DEBUG] Game setup completed!" << std::endl;
 
     currentState = GameState::MENU;
 
@@ -146,25 +173,24 @@ void Game::Run() {
         switch (currentState) {
             case GameState::MENU:
                 DrawStartScreen(*this);
-            break;
+                break;
             case GameState::HERO_SELECTION:
                 DrawHeroSelectionScreen(*this);
-            break;
+                break;
             case GameState::GAME:
+                HandleInput();
                 Update();
-            Draw();
-            break;
+                Draw();
+                break;
             case GameState::EXIT:
                 CloseWindow();
-            return;
-            default:
-                break;
+                return;
         }
 
         EndDrawing();
     }
 
-    std::cout << "[DEBUG] Exiting game loop..." << std::endl;
     CloseAudioDevice();
     CloseWindow();
+    std::cout << "[DEBUG] Exiting game loop..." << std::endl;
 }

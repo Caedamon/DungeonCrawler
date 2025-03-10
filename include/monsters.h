@@ -3,7 +3,10 @@
 
 #include <string>
 #include <vector>
-#include "raylib.h"  // Needed for drawing
+#include "raylib.h"
+
+class Player;
+class Dungeon;
 
 class Monster {
 public:
@@ -17,9 +20,14 @@ public:
     int GetHealth() const { return health; }
     int GetAttack() const { return attack; }
     float GetSpeed() const { return speed; }
+    bool IsDead() const { return isDead; }
 
-    // Draw the Monster
+    // Actions
     void Draw();
+    void TakeDamage(int damage);
+    void SetDead();
+    void AttackPlayer(Player& player);
+    void MoveTowardsPlayer(Player& player, const Dungeon& dungeon, const std::vector<Monster>& monsters);
 
 private:
     std::string name;
@@ -28,6 +36,10 @@ private:
     int health;
     int attack;
     float speed;
+    int visionRange = 10;
+
+    bool isDead = false;
+    bool CanSeePlayer(const Player& player, const Dungeon& dungeon) const;
 };
 
 // Returns a list of all default monsters

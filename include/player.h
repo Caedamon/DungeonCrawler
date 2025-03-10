@@ -10,7 +10,7 @@ public:
     int x, y;
 
     Player(int startX, int startY);
-    void Move(int dx, int dy, Dungeon &dungeon, const std::vector<Monster>& monsters);
+    void Move(int dx, int dy, Dungeon &dungeon, std::vector<Monster>& monsters);
     void RegenHealth();
 
     bool CanMove(int newX, int newY, const std::vector<Monster>& monsters);
@@ -19,6 +19,7 @@ public:
     int GetHealth() const { return health; }
     int GetAttack() const { return attack; }
     int GetMaxHealth() const { return maxHealth; }
+    int GetVisionRange() const { return visionRange; }
 
     // Setter functions (optional)
     void SetHealth(int value) { health = value; }
@@ -28,6 +29,8 @@ private:
     int health;
     int attack;
     int maxHealth;
+    int visionRange = 10;
+    Texture2D playerTexture;
 };
 
 #endif

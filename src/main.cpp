@@ -1,14 +1,3 @@
-/*
-#include "raylib.h"
-#include "game.h"
-
-int main() {
-    Game game;
-    game.Run();
-    return 0;
-}
-*/
-
 #include "raylib.h"
 #include "game.h"
 #include <iostream>
